@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en-us" id="vvt" style="background: #000">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta charset="UTF-8">
+	<meta name="description" content="Socket example website.">
+	<title>Socket Example June 12, 2015</title>
+	<script>var Demo = {};</script>
+	<style>
+		pre{
+			color:#ffffff;
+		}
+	</style>
+</head>
+<body>
+<div id="socketConsole"></div>
+<script>
+	var _id=function(id){return document.getElementById(id)};
+
+	var sConsole = _id('socketConsole');
+
+	Demo.init = function(){
+		Demo.socket();
+	};
+
+	Demo.createElem =function(txt){
+	   var pre=  document.createElement('pre')
+		pre.innerHTML = txt;
+		sConsole.appendChild(pre)
+	};
+
+	Demo.socket = function () {
+		var SVR_IP = '104.236.188.84';
+		var ws = "WebSocket" in window ? new WebSocket('ws://' + SVR_IP + ':8080/'): false;
+
+		if (ws){
+			Demo.createElem('Demo.socket > WebSocket supported');
+		} else {
+			Demo.createElem('Demo.socket > WebSocket NOT supported, use long-polling');
+		}
+
+
+		ws.onmessage = function (evt) {
+			console.log('Demo.socket > onmessage > Message received','Count is: ' + evt.data);
+			Demo.createElem('Demo.socket > onmessage > Message received > Count is = ' + evt.data);
+		};
+
+		ws.onopen = function (evt) {
+			console.log('Demo.socket > onopen > Socket opened', evt);
+			Demo.createElem('Demo.socket > onopen > Socket opened = '+ ws.readyState);
+		};
+
+		ws.onclose = function (evt) {
+			var code        = evt.code;
+			var reason      = evt.reason;
+			var wasClean    = evt.wasClean;
+			console.log('Demo.socket > onclose > Socket closed', evt, 'code = '+code, 'reason = '+reason, 'wasClean = '+wasClean);
+			Demo.createElem('Demo.socket > onclose > Socket closed = ' + evt +' code = ['+code+'] reason = ['+(reason?reason:'none given')+ '] wasClean = '+wasClean);
+		};
+
+		ws.onerror = function (evt) {
+			console.log('Demo.socket > onerror > Socket ERROR', evt.data);
+			Demo.createElem('Demo.socket > onerror > Socket ERROR = ' + evt.data);
+		};
+
+		ws.onabort = function (evt) {
+			console.log('Demo.socket > onabort > Socket aborted', evt);
+			Demo.createElem('Demo.socket > onabort > Socket aborted = '+ evt);
+		};
+	};
+</script>
+<script>window.onload=Demo.init;</script>
+</body>
+</html>
